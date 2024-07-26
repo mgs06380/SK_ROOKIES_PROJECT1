@@ -1,11 +1,13 @@
+// src/main/java/service/UserService.java
 package service;
 
 import dto.UserDto;
 import entity.User;
 import mapper.UserMapper;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 
@@ -15,11 +17,15 @@ public class UserService {
     @Autowired
     private UserMapper userMapper;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public UserDto createUser(UserDto userDto) {
+        String encryptedPassword = passwordEncoder.encode(userDto.getPassword());
         User user = User.builder()
                 .username(userDto.getUsername())
                 .email(userDto.getEmail())
-                .password(userDto.getPassword())
+                .password(encryptedPassword)
                 .createdAt(LocalDateTime.now())
                 .build();
         userMapper.save(user);
@@ -42,11 +48,12 @@ public class UserService {
     }
 
     public void updateUser(UserDto userDto) {
+        String encryptedPassword = passwordEncoder.encode(userDto.getPassword());
         User user = User.builder()
                 .id(userDto.getId())
                 .username(userDto.getUsername())
                 .email(userDto.getEmail())
-                .password(userDto.getPassword())
+                .password(encryptedPassword)
                 .build();
         userMapper.update(user);
         log.info("User updated: {}", user);
@@ -59,7 +66,7 @@ public class UserService {
 
     public String login(String username, String password) {
         User user = userMapper.findByUsername(username);
-        if (user != null && user.getPassword().equals(password)) {
+        if (user != null && passwordEncoder.matches(password, user.getPassword())) {
             // 인증 성공, 실제로는 JWT 또는 다른 토큰을 생성하여 반환합니다.
             return "dummy-token"; // 여기서는 예시로 "dummy-token"을 반환합니다.
         } else {
