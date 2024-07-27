@@ -21,6 +21,9 @@ public class TripDetailController {
     public ResponseEntity<?> createTripDetail(@RequestBody TripDetailDto tripDetailDto) {
         try {
             log.info("Create trip detail request received: {}", tripDetailDto);
+            if (tripDetailDto.getTripId() == null) {
+                return ResponseEntity.badRequest().body("Trip ID is required");
+            }
             TripDetailDto createdDetail = tripDetailService.createTripDetail(tripDetailDto);
             return ResponseEntity.ok(createdDetail);
         } catch (RuntimeException e) {

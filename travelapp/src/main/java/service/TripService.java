@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import dto.TripDto;
@@ -24,7 +26,9 @@ public class TripService {
     private UserMapper userMapper;
 
     public TripDto createTrip(TripDto tripDto) {
-        User user = userMapper.findById(tripDto.getUserId());
+        // 현재 인증된 사용자 정보 가져오기
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userMapper.findByUsername(userDetails.getUsername());
         if (user == null) {
             throw new RuntimeException("User not found");
         }
@@ -37,13 +41,20 @@ public class TripService {
                 .build();
         tripMapper.save(trip);
         tripDto.setId(trip.getId());
+        tripDto.setUserId(user.getId());
         log.info("Trip created: {}", trip);
         return tripDto;
     }
 
-    public List<TripDto> getTrips(Long userId) {
-        List<Trip> trips = tripMapper.findByUserId(userId);
-        log.info("Trips retrieved for userId {}: {}", userId, trips);
+    public List<TripDto> getTrips() {
+        // 현재 인증된 사용자 정보 가져오기
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userMapper.findByUsername(userDetails.getUsername());
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+        List<Trip> trips = tripMapper.findByUserId(user.getId());
+        log.info("Trips retrieved for userId {}: {}", user.getId(), trips);
         return trips.stream()
                 .map(trip -> TripDto.builder()
                         .id(trip.getId())

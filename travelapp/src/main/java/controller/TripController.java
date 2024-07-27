@@ -18,13 +18,20 @@ public class TripController {
     @PostMapping
     public TripDto createTrip(@RequestBody TripDto tripDto) {
         log.info("Create trip request received: {}", tripDto);
+        log.info("Start Date: {}", tripDto.getStartDate());
+        log.info("End Date: {}", tripDto.getEndDate());
+        
+        if (tripDto.getStartDate() == null || tripDto.getEndDate() == null) {
+            throw new IllegalArgumentException("Start date and end date cannot be null");
+        }
+
         return tripService.createTrip(tripDto);
     }
 
     @GetMapping
-    public List<TripDto> getTrips(@RequestParam("userId") Long userId) {
-        log.info("Get trips request received for userId: {}", userId);
-        return tripService.getTrips(userId);
+    public List<TripDto> getTrips() {
+        log.info("Get trips request received");
+        return tripService.getTrips();
     }
 
     @GetMapping("/{id}")

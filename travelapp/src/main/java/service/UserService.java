@@ -1,10 +1,12 @@
-// src/main/java/service/UserService.java
 package service;
 
 import dto.UserDto;
 import entity.User;
 import mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +15,8 @@ import java.time.LocalDateTime;
 
 @Slf4j
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
+    
     @Autowired
     private UserMapper userMapper;
 
@@ -64,13 +67,28 @@ public class UserService {
         log.info("User deleted: {}", id);
     }
 
-    public String login(String username, String password) {
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userMapper.findByUsername(username);
-        if (user != null && passwordEncoder.matches(password, user.getPassword())) {
-            // 인증 성공, 실제로는 JWT 또는 다른 토큰을 생성하여 반환합니다.
-            return "dummy-token"; // 여기서는 예시로 "dummy-token"을 반환합니다.
-        } else {
-            throw new RuntimeException("Invalid credentials");
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found with username: " + username);
         }
+        return org.springframework.security.core.userdetails.User
+                .withUsername(user.getUsername())
+                .password(user.getPassword())
+                .roles("USER")
+                .build();
+    }
+
+    public UserDto getUserByUsername(String username) {
+        User user = userMapper.findByUsername(username);
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+        return UserDto.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .build();
     }
 }

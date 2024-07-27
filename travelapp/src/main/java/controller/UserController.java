@@ -4,12 +4,15 @@ import dto.UserDto;
 import service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
+    
     @Autowired
     private UserService userService;
 
@@ -38,9 +41,13 @@ public class UserController {
         userService.deleteUser(id);
     }
 
-    @PostMapping("/login")
-    public String login(@RequestParam("username") String username, @RequestParam("password") String password) {
-        log.info("Login request received for username: {}", username);
-        return userService.login(username, password);
+    // 새로운 메서드: 현재 사용자 ID로 정보 가져오기
+    @GetMapping("/me")
+    public UserDto getCurrentUser(@AuthenticationPrincipal UserDetails userDetails) {
+        // 현재 사용자의 ID를 가져오는 로직 추가
+        UserDto currentUser = userService.getUserByUsername(userDetails.getUsername());
+        Long currentUserId = currentUser.getId(); // 현재 사용자 ID
+        log.info("Get current user request received for id: {}", currentUserId);
+        return userService.getUser(currentUserId); // ID로 사용자 정보 가져오기
     }
 }
