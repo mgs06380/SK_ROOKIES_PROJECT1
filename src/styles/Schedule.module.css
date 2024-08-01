@@ -1,0 +1,67 @@
+.scheduleContainer {
+    width: 100%;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+  }
+  
+  .scheduleContainer :global(.rbc-calendar) {
+    background-color: #ffffff;
+  }
+  
+  .scheduleContainer :global(.rbc-event) {
+    color: #FFFFFF !important;
+    border: none !important;
+    border-radius: 0 !important;
+    opacity: 1 !important;
+    overflow: hidden !important;
+    padding: 2px !important;
+    margin: 0 !important;
+    font-weight: bold !important;
+  }
+  
+  .scheduleContainer :global(.rbc-event-content) {
+    white-space: normal !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 3 !important;
+    -webkit-box-orient: vertical !important;
+  }
+  
+  .scheduleContainer :global(.rbc-toolbar) {
+    background-color: #ffffff !important;
+    color: #2E4453 !important;
+  }
+  
+  .scheduleContainer :global(.rbc-time-view),
+  .scheduleContainer :global(.rbc-header) {
+    background-color: #ffffff !important;
+    color: #2E4453 !important;
+  }
+  
+  .scheduleContainer :global(.rbc-time-view .rbc-time-content) {
+    border-top: 1px solid #D1E3F0 !important;
+  }
+  
+  .scheduleContainer :global(.rbc-time-view .rbc-time-header-content) {
+    border-left: 1px solid #D1E3F0 !important;
+  }
+  
+  .scheduleContainer :global(.rbc-timeslot-group) {
+    border-bottom: 1px solid #D1E3F0 !important;
+  }
+  
+  .scheduleContainer :global(.rbc-time-slot) {
+    border-top: none !important;
+  }
+  
+  .scheduleContainer :global(.rbc-day-slot .rbc-time-slot) {
+    border-top: none !important;
+  }
+  
+  .scheduleContainer :global(.rbc-day-slot .rbc-events-container) {
+    margin-right: 0 !important;
+  }
